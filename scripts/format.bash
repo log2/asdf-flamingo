@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-shfmt --language-dialect bash --write \
-	./**/*
+shfmt -w -i 2 -ci -bn -sr --language-dialect bash --write \
+  ./**/*
