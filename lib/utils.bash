@@ -41,7 +41,8 @@ download_release() {
 	version="$1"
 	filename="$2"
 
-  	local url_filename="$(get_filename "$(get_platform)" "${ASDF_INSTALL_VERSION}")"
+  	local url_filename
+	url_filename="$(get_filename "$(get_platform)" "${ASDF_INSTALL_VERSION}")"
  	url="$GH_REPO/releases/download/v${ASDF_INSTALL_VERSION}/${url_filename}"
 
 	echo "* Downloading $TOOL_NAME release $version..."
