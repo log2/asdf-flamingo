@@ -41,8 +41,8 @@ download_release() {
 	version="$1"
 	filename="$2"
 
-	# TODO: Adapt the release URL convention for flamingo
-	url="$GH_REPO/archive/v${version}.tar.gz"
+  	local url_filename="$(get_filename "$(get_platform)" "${ASDF_INSTALL_VERSION}")"
+ 	url="$GH_REPO/releases/download/v${ASDF_INSTALL_VERSION}/${url_filename}"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -59,9 +59,8 @@ install_version() {
 
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+  		cp "${ASDF_DOWNLOAD_PATH}/${TOOL_NAME}" "$install_path"
 
-		# TODO: Assert flamingo executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
@@ -71,4 +70,19 @@ install_version() {
 		rm -rf "$install_path"
 		fail "An error occurred while installing $TOOL_NAME $version."
 	)
+}
+
+get_filename() {
+  echo "${TOOL_NAME}_${ASDF_INSTALL_VERSION}_$(get_platform).tar.gz"
+}
+
+get_platform() {
+  arch=$(uname -m)
+  case $arch in
+    armv*) arch="arm";;
+    arm64) arch="arm64";; # m1 macs
+    aarch64) arch="arm64";;
+    *) arch="amd64";;
+  esac
+  echo "$(uname | tr '[:upper:]' '[:lower:]')_${arch}"
 }
